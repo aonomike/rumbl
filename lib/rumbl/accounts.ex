@@ -1,23 +1,23 @@
 defmodule Rumbl.Accounts do
-    @moduledoc """
-    The Accounts context
-    """
+  @moduledoc """
+  The Accounts context
+  """
+  alias Rumbl.Repo
+  alias Rumbl.Accounts.User
 
-    alias Rumbl.Accounts.User
+  def get_user(id) do
+    Repo.get(User, id)
+  end
 
-    def list_users do
-      [
-        %User{id: "1", name: "Jose", username: "jose"},
-        %User{id: "2", name: "Chris", username: "chris"},
-        %User{id: "3", name: "Nairobi", username: "nairobi"}
-      ]
-    end
+  def get_user!(id) do
+    Repo.get!(User, id)  
+  end
 
-    def get_user(id) do
-      Enum.find(list_users(), fn map -> map.id == id end)
-    end
+  def get_user_by(params) do
+    Repo.get_by(User, params)
+  end
 
-    def get_user_by(params) do
-      Enum.find(list_users(), fn map -> Enum.all?(params, fn {key, value} -> Map.get(map, key) == value end) end)
-    end
+  def list_users() do
+    Repo.all(User)
+  end
 end
