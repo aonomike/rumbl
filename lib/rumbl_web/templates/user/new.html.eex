@@ -5,7 +5,7 @@
         <div class="alert alert-danger">
             Ooops!! Something really wrong!!!
         </div>
-    <%= end %>
+    <% end %>
     <div>
         <%= text_input f, :name, placeholder: "Name" %>
         <%= error_tag f, :name %>
