@@ -2,6 +2,7 @@ defmodule Rumbl.Accounts do
   @moduledoc """
   The Accounts context
   """
+  import Ecto.Query
   alias Rumbl.Repo
   alias Rumbl.Accounts.User
 
@@ -10,7 +11,7 @@ defmodule Rumbl.Accounts do
   end
 
   def get_user!(id) do
-    Repo.get!(User, id)  
+    Repo.get!(User, id)
   end
 
   def get_user_by(params) do
@@ -27,10 +28,9 @@ defmodule Rumbl.Accounts do
 
   def create_user(attrs \\ %{}) do
     %User{}
-      |>User.changeset(attrs)
-      |>Repo.insert()
+    |> User.changeset(attrs)
+    |> Repo.insert()
   end
-  
 
   alias Rumbl.Accounts.Credential
 
@@ -134,7 +134,49 @@ defmodule Rumbl.Accounts do
 
   def register_user(attrs \\ %{}) do
     %User{}
-      |>User.registration_changeset(attrs)
-      |>Repo.insert()
+    |> User.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_user_by_email(email) do
+    query =
+      from u in User,
+        join: c in assoc(u, :credential),
+        where: c.email == ^email
+
+    query
+    |> Repo.one()
+    |> Repo.preload(:credential)
+  end
+
+  @doc """
+  authenticate_by_email_and_pass/2 authenticates by email and password
+
+  ## Arguments
+  email, :string
+  pass, :string
+
+  ## Examples
+  iex>authenticate_by_email_and_pass(correct_email, correct_pass)
+  {:ok, user}
+  iex> authenticate_by_email_and_pass(correct, email)
+  {:error, :unauthorized}
+  iex> authenticate_by_email_and_pass(correct, email)
+  {:error, :not_found}
+  """
+  def authenticate_by_username_and_pass(email, given_pass) do
+    user = get_user_by_email(email)
+
+    cond do
+      user && Comeonin.Pbkdf2.checkpw(given_pass, user.credential.password_hash) ->
+        {:ok, user}
+
+      user ->
+        {:error, :unauthorized}
+
+      true ->
+        Comeonin.Pbkdf2.dummy_checkpw()
+        {:error, :not_found}
+    end
   end
 end
