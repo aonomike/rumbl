@@ -18,7 +18,7 @@
             <% else %>
                <li> <%= link "Register", to: Routes.user_path(@conn, :new) %> </li>
               <li> <%= link "Sign in", to: Routes.session_path(@conn, :new) %> </li>
-            <% end %>
+            <%  end %>
           </ul>
         </nav>
         <a href="http://phoenixframework.org/" class="phx-logo">
