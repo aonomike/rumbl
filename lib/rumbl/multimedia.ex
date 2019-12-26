@@ -6,6 +6,7 @@ defmodule Rumbl.Multimedia do
   import Ecto.Query, warn: false
   alias Rumbl.Repo
 
+  alias Rumbl.Accounts.User
   alias Rumbl.Multimedia.Video
 
   @doc """
@@ -49,9 +50,10 @@ defmodule Rumbl.Multimedia do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_video(attrs \\ %{}) do
+  def create_video(%User{} = user, attrs \\ %{}) do
     %Video{}
     |> Video.changeset(attrs)
+    |> put_user(user)
     |> Repo.insert()
   end
 
@@ -98,7 +100,51 @@ defmodule Rumbl.Multimedia do
       %Ecto.Changeset{source: %Video{}}
 
   """
-  def change_video(%Video{} = video) do
-    Video.changeset(video, %{})
+  def change_video(%User{}=user, %Video{} = video) do
+    video
+    |> Video.changeset(%{})
+    |> put_user(user)
+  end
+
+  @doc """
+  Returns an `Ecto.Changeset{}` with user associated to video
+
+  ## Examples
+      iex> put_user(video_changeset, user)
+      %Ecto.Changeset{...}
+  """
+  defp put_user(changeset, user) do
+    Ecto.Changeset.put_assoc(changeset, :user, user)
+  end
+
+  @doc """
+    Returns a list of Videos that a user can see
+
+  ## Examples
+    iex> list_user_videos(%Accounts.User{} = user)
+    [%MultimediaVideo{}...]
+  """
+
+  def list_user_videos(%User{} = user) do
+    Video
+    |> user_videos_query(user)
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns a %Video{} given an id and a user
+
+  ## Examples
+  iex> get_user_video!(%User{id:1,...}, 3)
+  %Video{id:3,...}
+  """
+  def get_user_video!(%User{}=user, id) do
+    from (v in Video, where: v.id == ^id)
+    |> user_videos_query(user)
+    |> Repo.one!()
+  end
+
+  defp user_videos_query(query, %User{id: user_id}) do
+    from (v in query, where v.user_id == ^user_id)
   end
 end
