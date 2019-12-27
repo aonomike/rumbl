@@ -19,7 +19,9 @@ defmodule Rumbl.Multimedia do
 
   """
   def list_videos do
-    Repo.all(Video)
+    Video
+    |> Repo.all()
+    |> preload_user()
   end
 
   @doc """
@@ -36,7 +38,10 @@ defmodule Rumbl.Multimedia do
       ** (Ecto.NoResultsError)
 
   """
-  def get_video!(id), do: Repo.get!(Video, id)
+  def get_video!(id), do: 
+    Video
+    |> Repo.get!(id)
+    |> preload_user()
 
   @doc """
   Creates a video.
@@ -129,6 +134,7 @@ defmodule Rumbl.Multimedia do
     Video
     |> user_videos_query(user)
     |> Repo.all()
+    |> preload_user()
   end
 
   @doc """
@@ -139,12 +145,17 @@ defmodule Rumbl.Multimedia do
   %Video{id:3,...}
   """
   def get_user_video!(%User{}=user, id) do
-    from (v in Video, where: v.id == ^id)
+    from(v in Video, where: v.id == ^id)
     |> user_videos_query(user)
     |> Repo.one!()
+    |> preload_user()
   end
 
   defp user_videos_query(query, %User{id: user_id}) do
-    from (v in query, where v.user_id == ^user_id)
+    from(v in query, where: v.user_id == ^user_id)
+  end
+
+  defp preload_user(video_or_videos) do
+    Repo.preload(video_or_videos, :user)
   end
 end
