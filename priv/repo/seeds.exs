@@ -9,3 +9,11 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+## Add category data
+
+alias Rumbl.Multimedia
+
+for category <- ~w(Action Drama Romance Comedy Sci-fy) do
+  Multimedia.create_category(category)
+end
