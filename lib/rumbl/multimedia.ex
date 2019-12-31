@@ -8,6 +8,7 @@ defmodule Rumbl.Multimedia do
 
   alias Rumbl.Accounts.User
   alias Rumbl.Multimedia.Video
+  alias Rumbl.Multimedia.Category
 
   @doc """
   Returns the list of videos.
@@ -38,10 +39,11 @@ defmodule Rumbl.Multimedia do
       ** (Ecto.NoResultsError)
 
   """
-  def get_video!(id), do: 
-    Video
-    |> Repo.get!(id)
-    |> preload_user()
+  def get_video!(id),
+    do:
+      Video
+      |> Repo.get!(id)
+      |> preload_user()
 
   @doc """
   Creates a video.
@@ -105,7 +107,7 @@ defmodule Rumbl.Multimedia do
       %Ecto.Changeset{source: %Video{}}
 
   """
-  def change_video(%User{}=user, %Video{} = video) do
+  def change_video(%User{} = user, %Video{} = video) do
     video
     |> Video.changeset(%{})
     |> put_user(user)
@@ -144,7 +146,7 @@ defmodule Rumbl.Multimedia do
   iex> get_user_video!(%User{id:1,...}, 3)
   %Video{id:3,...}
   """
-  def get_user_video!(%User{}=user, id) do
+  def get_user_video!(%User{} = user, id) do
     from(v in Video, where: v.id == ^id)
     |> user_videos_query(user)
     |> Repo.one!()
@@ -157,5 +159,35 @@ defmodule Rumbl.Multimedia do
 
   defp preload_user(video_or_videos) do
     Repo.preload(video_or_videos, :user)
+  end
+
+  @doc """
+  Creates a category
+
+  ## Parameters
+
+  name, :string
+  ## Examples
+      iex> create_category(name)
+      {:ok, %Category{name: value}}
+      iex> create_category(%{field: value})
+      {:error, ..}
+  """
+
+  def create_category(name) do
+    Repo.get_by(Category, name: name) || Repo.insert!(%Category{name: name})
+  end
+
+  @doc """
+  Returns a list of categories ordered alphabetically by name
+
+  ## Examples
+  iex> list_alphabetical_categories()
+  [%Categories{name: "A", id:5}, %Categories{name: "D", id:1}]
+  """
+  def list_alphabetical_categories() do
+    Category
+    |> Category.alphabetical()
+    |> Repo.all()
   end
 end
