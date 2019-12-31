@@ -177,4 +177,17 @@ defmodule Rumbl.Multimedia do
   def create_category(name) do
     Repo.get_by(Category, name: name) || Repo.insert!(%Category{name: name})
   end
+
+  @doc """
+  Returns a list of categories ordered alphabetically by name
+
+  ## Examples
+  iex> list_alphabetical_categories()
+  [%Categories{name: "A", id:5}, %Categories{name: "D", id:1}]
+  """
+  def list_alphabetical_categories() do
+    Category
+    |> Category.alphabetical()
+    |> Repo.all()
+  end
 end
