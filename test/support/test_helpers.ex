@@ -3,6 +3,7 @@ defmodule Rumbl.TestHelpers do
   Test hepler functions that are accessible to all the tests
   """
   alias Rumbl.{Accounts, Multimedia}
+  alias Rumbl.Accounts.User
 
   @doc """
   Creates and returns user
