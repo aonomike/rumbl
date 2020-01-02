@@ -22,7 +22,7 @@ defmodule Rumbl.TestHelpers do
         username: username,
         name: "Some User",
         credential: %{
-          email: attrs.email || "#{username}.example.com",
+          email: attrs[:email] || "#{username}.example.com",
           password: attrs[:password] || "super-secret"
         }
       })
