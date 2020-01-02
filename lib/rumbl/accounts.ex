@@ -164,7 +164,7 @@ defmodule Rumbl.Accounts do
   iex> authenticate_by_email_and_pass(correct, email)
   {:error, :not_found}
   """
-  def authenticate_by_username_and_pass(email, given_pass) do
+  def authenticate_by_email_and_pass(email, given_pass) do
     user = get_user_by_email(email)
 
     cond do

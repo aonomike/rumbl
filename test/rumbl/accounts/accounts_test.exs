@@ -56,7 +56,7 @@ defmodule Rumbl.Accounts.AccountsTest do
     @password "123456"
 
     setup do
-      {:ok, user: user_fixture(@email, @password)}
+      {:ok, user: user_fixture(%{email: @email, password: @password})}
     end
 
     test "returns user with correct email and password", %{user: %User{id: id}} do
